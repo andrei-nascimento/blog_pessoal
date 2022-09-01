@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 //Indica que é uma classe controller - métodos GET, POST, PUT, DELETE
 @RestController
@@ -33,6 +34,10 @@ public class PostagemController {
 	//Injeção de dependência ou Transferência de responsabilidade (instancía o que está abaixo)
 	@Autowired 
 	private PostagemRepository postagemRepository;
+	
+	//Dá acesso aos Métodos das Classes Tema e TemaController
+	@Autowired
+	private TemaRepository temaRepository;
 	
 	//SELECT * FROM tb_postagem;
 	@GetMapping
@@ -57,17 +62,26 @@ public class PostagemController {
 	//INSERT INTO tb_postagens (titulo, texto, data) VALUES ("Título", "Texto", CURRENT_TIMESTAMP());
 	@PostMapping
 	public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(postagemRepository.save(postagem));
+		if(temaRepository.existsById(postagem.getTema().getId()))
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(postagemRepository.save(postagem));
+		
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	//UPDATE tb_postagens SET titulo = "titulo", texto = "texto", data = CURRENT_TIMESTAMP() WHERE id = id;
 	@PutMapping
 	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) {
-		return postagemRepository.findById(postagem.getId())
-				.map(resposta -> ResponseEntity.status(HttpStatus.OK)
-						.body(postagemRepository.save(postagem)))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		if(postagemRepository.existsById(postagem.getId())) {
+			
+			if(temaRepository.existsById(postagem.getTema().getId()))
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(postagemRepository.save(postagem));
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
 	//DELETE FROM tb_postagens WHERE id = id;
