@@ -33,7 +33,7 @@ public class PostagemController {
 	
 	//Injeção de dependência ou Transferência de responsabilidade (instancía o que está abaixo)
 	@Autowired 
-	private PostagemRepository postagemRepository;
+	private PostagemRepository postagemRepository; //chamamos por um apelido(postagemRepository)
 	
 	//Dá acesso aos Métodos das Classes Tema e TemaController
 	@Autowired
@@ -46,7 +46,7 @@ public class PostagemController {
 	}
 	
 	//SELECT * FROM tb_postagens where id = id;
-	@GetMapping("/{id}")
+	@GetMapping("/{id}") //sub-rota ou sub-endpoint
 	public ResponseEntity<Postagem> getById(@PathVariable Long id) {
 		return postagemRepository.findById(id)
 				.map(resposta -> ResponseEntity.ok(resposta))
@@ -54,8 +54,8 @@ public class PostagemController {
 	}
 	
 	//SELECT * FROM tb_postagens where titulo like "%titulo%";
-	@GetMapping("/titulo/{titulo}")
-	public ResponseEntity<List<Postagem>> getByTitulo(@PathVariable String titulo) {
+	@GetMapping("/titulo/{titulo}") //{} = Variável de caminho(PathVariable)
+	public ResponseEntity<List<Postagem>> getByTitulo(@PathVariable String titulo) { //O List cria um array para mostrar todos os conteúdos solicitados
 		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo));
 	}
 	
@@ -69,7 +69,7 @@ public class PostagemController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
-	//UPDATE tb_postagens SET titulo = "titulo", texto = "texto", data = CURRENT_TIMESTAMP() WHERE id = id;
+	//UPDATE tb_postagens SET titulo = "titulo", texto = "texto" WHERE id = id;
 	@PutMapping
 	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) {
 		if(postagemRepository.existsById(postagem.getId())) {
@@ -77,10 +77,8 @@ public class PostagemController {
 			if(temaRepository.existsById(postagem.getTema().getId()))
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(postagemRepository.save(postagem));
-			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
@@ -88,7 +86,7 @@ public class PostagemController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
-		Optional<Postagem> postagem = postagemRepository.findById(id);
+		Optional<Postagem> postagem = postagemRepository.findById(id); //Quando se tem apenas duas opções de resposta é usado o Optional(ou acha o id ou não acha)
 		
 		if(postagem.isEmpty())
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);

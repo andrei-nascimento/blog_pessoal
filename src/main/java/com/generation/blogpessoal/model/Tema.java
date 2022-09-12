@@ -25,9 +25,9 @@ public class Tema {
 	private String descricao;
 	
 	//O nome do Atributo da Classe Proprietária (Tema), que foi criado na Classe filha Postagem (Tema tema), que será o Objeto de referência na Relação.
-	@OneToMany(mappedBy = "tema", cascade = CascadeType.REMOVE) //Quando um Objeto da Classe Tema for apagado, todos os Objetos da Classe Postagem associados ao Tema apagado, também serão apagados. O Inverso não é verdadeiro.
-	@JsonIgnoreProperties("tema") //Impede o looping infinito
-	private List<Postagem> postagem;
+	@OneToMany(mappedBy = "tema", cascade = CascadeType.ALL) //Quando um Objeto da Classe Tema for apagado, todos os Objetos da Classe Postagem associados ao Tema apagado ou atualizado, também serão apagados ou atualizados. O Inverso não é verdadeiro.
+	@JsonIgnoreProperties("tema") //Impede o looping infinito - Recursividade
+	private List<Postagem> postagem; //Prepara a model para receber a lista de postagens
 	
 	public Long getId() {
 		return id;

@@ -41,9 +41,13 @@ public class Postagem {
 
 	//Indica que a Classe Postagem será o lado N:1 e terá um Objeto da Classe Tema, que no modelo Relacional será a Chave Estrangeira na Tabela tb_postagens (tema_id).
 	@ManyToOne
-	//Indica que uma parte do JSON será ignorado, ou seja, o Objeto Tema será exibido como um "Sub Objeto" do Objeto Postagem
+	//Indica que uma parte do JSON será ignorado, ou seja, o Objeto Tema será exibido como um "Sub-Objeto" do Objeto Postagem
 	@JsonIgnoreProperties("postagem")
 	private Tema tema;
+	
+	@ManyToOne
+	@JsonIgnoreProperties("postagem")
+	private Usuario usuario;
 	
 	public Long getId() {
 		return id;
@@ -83,6 +87,14 @@ public class Postagem {
 
 	public void setTema(Tema tema) {
 		this.tema = tema;
+	}
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 	
 	
